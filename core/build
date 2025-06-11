@@ -1,0 +1,63 @@
+#!/home/aruel/.local/bin/murex
+
+if {g ../clings} {
+  rm ../clings
+}
+
+set run = false
+set clean = false
+set target = "-Dtarget=x86_64-native"
+set mode = "--release=off"
+
+$PARAMS -> len -> set size
+
+if {$size > 1} {
+  $PARAMS -> [2..] -> foreach p {
+    if {$p == "run"} {
+      run = true
+    }
+
+    if {$p == "clean"} {
+      clean = true
+    }
+
+    if {$p == "mac"} {
+      target = "-Dtarget=x86_64-macos"
+      out "Set target to x86_64-macos"
+    }
+    if {$p == "windows"} {
+      target = "-Dtarget=x86_64-windows"
+      out "Set target to x86_64-windows"
+    }
+    if {$p == "linux"} {
+      target = "-Dtarget=x86_64-linux-gnu"
+      out "Set target to x86_64-linux-gnu"
+    }
+
+    if {$p == "release"} {
+      mode = "--release=safe"
+      out "Set release mode to safe"
+    }
+  }
+}
+
+out "Building..."
+zig build -p . $target $mode
+
+!if {g ./bin/clings} {
+  out "Could not build clings!"
+  exit 1 
+}
+
+out "Moving..."
+mv ./bin/clings ../
+
+
+if {$run} {
+  cd ..
+  ./clings
+}
+
+if {$clean} {
+  rm ./progress.dat
+}
