@@ -1,0 +1,85 @@
+#!/home/aruel/.local/bin/murex
+
+
+$PARAMS -> len -> set size
+
+set target = "linux"
+set package = false
+
+if {$size > 1} {
+  $PARAMS -> [2..] -> foreach p {
+    if {$p == "mac"} {
+    target = "mac"
+  }
+
+  if {$p == "pack"} {
+    package = true
+    }
+  }
+}
+
+# Build the exe
+# cd core
+# ./build "release" $target
+# exitnum -> set outcode
+
+# if {$outcode != 0} {
+#   exit $outcode
+# }
+
+# cd ..
+
+out "Creating final build..."
+
+!if {g seelings} {
+  mkdir seelings
+  mkdir seelings/Notebooks
+}
+
+!if {g clings} {
+  out "Could not find file 'clings'!"
+  exit -1
+}
+
+mv clings seelings
+cp README.md seelings
+
+a ["Module1_Basics","Module2_Memory","Module3_Derived-Types","Module5_Project"] -> set moduleDirs
+a ["basics0.c","basics1.c","basics2.c","basics3.c","basics4.c"] -> set mod1Files
+a ["memory0.c","memory1.c","memory2.c","memory3.c","memory4.c"] -> set mod2Files
+a ["derived0.c","derived1.c","derived2.c","derived3.c","derived4.c"] -> set mod4Files
+a ["libustring.c"] -> set mod5Files
+
+function setupExercises {
+  modDir = $PARAMS[0]
+  fileArr = $PARAMS[1]
+
+  !if {g seelings/$modDir} {
+    mkdir seelings/$modDir
+  }
+
+  $fileArr -> foreach cfile {
+    set path = "$modDir/$cfile"
+    !if {g seelings/$path} {
+      cp $path seelings/$modDir
+    }
+  }
+}
+
+setupExercises $moduleDirs[0] $mod1Files
+setupExercises $moduleDirs[1] $mod2Files
+setupExercises $moduleDirs[2] $mod4Files
+setupExercises $moduleDirs[3] $mod5Files
+
+cp @{g Notebooks/*.html} seelings/Notebooks/
+
+# Optional to package everything
+if {$package} {
+  # Need to rename clings to seelings
+  cd seelings
+  mv clings seelings
+  cd ..
+
+  out "Packaging to tar.gz..."
+  tar -czvf ./seelings.tar.gz ./seelings
+}
