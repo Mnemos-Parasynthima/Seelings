@@ -110,7 +110,7 @@ fn checkOutput(proc:std.process.Child, expected: []const u8) !bool {
   try stdout.print("{s}\n", .{out});
 
   try stdout.print("Expected:\n{s}\n", .{expected});
-  
+
   return std.mem.eql(u8, out, expected);
 }
 
@@ -122,9 +122,9 @@ fn runExercise(filename: []const u8, expected: []const u8) !bool {
   if (!compiled) {
     return false;
   }
-    
+
   var proc = std.process.Child.init(&[_][]const u8{filename}, allocator);
-  
+
   proc.stdout_behavior = .Pipe;
   proc.stderr_behavior = .Inherit;
 
