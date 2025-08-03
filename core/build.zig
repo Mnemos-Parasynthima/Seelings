@@ -49,6 +49,12 @@ pub fn build(b: *std.Build) void {
     .root_module = exe_mod,
   });
 
+  const useCompiler = b.option([]const u8, "compiler", "Which compiler to use (gcc|clang)") orelse "gcc";
+
+  const opts = b.addOptions();
+  opts.addOption([]const u8, "compiler", useCompiler);
+  exe.root_module.addOptions("buildopts", opts);
+
   // THIS IS TEMPORARY
   exe.linkLibC();
 

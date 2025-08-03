@@ -2,6 +2,7 @@
 
 const std = @import("std");
 const builtin = @import("builtin");
+const buildopts = @import("buildopts");
 const consts = @import("consts.zig");
 const testlib = @import("testlibustr.zig");
 
@@ -25,6 +26,8 @@ const testStrcpy = testlib.testStrcpy;
 const progressFile = "progress.dat";
 
 const LIMIT = 14;
+
+const cc:[]const u8 = buildopts.compiler;
 
 
 fn checkProgress() bool {
@@ -78,7 +81,7 @@ fn compileProgram(allocator:std.mem.Allocator, filename: []const u8) !bool {
   
   file = try std.fmt.bufPrint(file, "{s}.c", .{filename});
   
-  var proc = std.process.Child.init(&[_][]const u8{"gcc", file, "-o", filename}, allocator);
+  var proc = std.process.Child.init(&[_][]const u8{cc, file, "-o", filename}, allocator);
 
   try proc.spawn();
 
@@ -146,7 +149,7 @@ fn compileLibrary(allocator:std.mem.Allocator) !bool {
   }
 
   const ccArgs = [_][]const u8 {
-    "gcc",
+    cc,
     "-fPIC", "-shared",
     "./Module5_Project/libustring.c",
     "-o", libpath

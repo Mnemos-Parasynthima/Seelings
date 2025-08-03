@@ -7,6 +7,7 @@ if {g ../clings} {
 set run = false
 set clean = false
 set target = "-Dtarget=x86_64-native"
+set compiler = "gcc"
 set mode = "--release=off"
 
 $PARAMS -> len -> set size
@@ -21,7 +22,7 @@ if {$size > 1} {
       clean = true
     }
 
-    if {$p == "mac"} {
+    if {$p == "macos"} {
       target = "-Dtarget=x86_64-macos"
       out "Set target to x86_64-macos"
     }
@@ -38,11 +39,20 @@ if {$size > 1} {
       mode = "--release=safe"
       out "Set release mode to safe"
     }
+
+    if {$p == "clang"} {
+      compiler = "clang"
+      out "Set compiler to clang"
+    }
+    if {$p == "gcc"} {
+      compiler = "gcc"
+      out "Set compiler to gcc"
+    }
   }
 }
 
 out "Building..."
-zig build -p . $target $mode
+zig build -p . $target $mode -Dcompiler=$compiler
 
 !if {g ./bin/clings} {
   out "Could not build clings!"
@@ -50,12 +60,12 @@ zig build -p . $target $mode
 }
 
 out "Moving..."
-mv ./bin/clings ../
+mv ./bin/clings ../clings-$compiler-x86_64
 
 
 if {$run} {
   cd ..
-  ./clings
+  ./clings-$compiler-x86_64
 }
 
 if {$clean} {

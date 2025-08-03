@@ -4,30 +4,35 @@
 $PARAMS -> len -> set size
 
 set target = "linux"
+set compiler = "gcc"
 set package = false
 
 if {$size > 1} {
   $PARAMS -> [2..] -> foreach p {
-    if {$p == "mac"} {
-    target = "mac"
-  }
+    if {$p == "macos"} {
+      target = "macos"
+    }
 
-  if {$p == "pack"} {
-    package = true
+    if {$p == "clang"} {
+      compiler = "clang"
+    }
+
+    if {$p == "pack"} {
+      package = true
     }
   }
 }
 
 # Build the exe
-# cd core
-# ./build "release" $target
-# exitnum -> set outcode
+cd core
+./build "release" $target $compiler
+exitnum -> set outcode
 
-# if {$outcode != 0} {
-#   exit $outcode
-# }
+if {$outcode != 0} {
+  exit $outcode
+}
 
-# cd ..
+cd ..
 
 out "Creating final build..."
 
@@ -36,12 +41,12 @@ out "Creating final build..."
   mkdir seelings/Notebooks
 }
 
-!if {g clings} {
-  out "Could not find file 'clings'!"
+!if {g clings-$compiler-x86_64} {
+  out "Could not find file 'clings-$compiler-x86_64'!"
   exit -1
 }
 
-mv clings seelings
+mv clings-$compiler-x86_64 seelings
 cp README.md seelings
 
 a ["Module1_Basics","Module2_Memory","Module3_Derived-Types","Module5_Project"] -> set moduleDirs
@@ -77,9 +82,9 @@ cp @{g Notebooks/*.html} seelings/Notebooks/
 if {$package} {
   # Need to rename clings to seelings
   cd seelings
-  mv clings seelings
+  mv clings-$compiler-x86_64 seelings
   cd ..
 
   out "Packaging to tar.gz..."
-  tar -czvf ./seelings.tar.gz ./seelings
+  tar -czvf ./seelings-$(compiler)-x86_64-$(target).tar.gz ./seelings
 }
