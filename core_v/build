@@ -1,0 +1,73 @@
+#!/home/aruel/.local/bin/murex
+
+if {g ../clings-v} {
+  rm ../clings-v
+}
+
+set run = false
+set clean = false
+# set target = "-Dtarget=x86_64-native"
+set compiler = "gcc"
+set mode = "--release=off"
+
+$PARAMS -> len -> set size
+
+if {$size > 1} {
+  $PARAMS -> [2..] -> foreach p {
+    if {$p == "run"} {
+      run = true
+    }
+
+    if {$p == "clean"} {
+      clean = true
+    }
+
+    # if {$p == "macos"} {
+    #   target = "-Dtarget=x86_64-macos"
+    #   out "Set target to x86_64-macos"
+    # }
+    # if {$p == "windows"} {
+    #   target = "-Dtarget=x86_64-windows"
+    #   out "Set target to x86_64-windows"
+    # }
+    # if {$p == "linux"} {
+    #   target = "-Dtarget=x86_64-linux-gnu"
+    #   out "Set target to x86_64-linux-gnu"
+    # }
+
+    if {$p == "release"} {
+      mode = "--release=safe"
+      out "Set release mode to safe"
+    }
+
+    if {$p == "clang"} {
+      compiler = "clang"
+      out "Set compiler to clang"
+    }
+    if {$p == "gcc"} {
+      compiler = "gcc"
+      out "Set compiler to gcc"
+    }
+  }
+}
+
+out "Building..."
+v . -o clings-v
+
+!if {g ./clings-v} {
+  out "Could not build clings!"
+  exit 1 
+}
+
+out "Moving..."
+mv ./clings-v ../clings-v-$compiler-x86_64
+
+
+if {$run} {
+  cd ..
+  ./clings-v-$compiler-x86_64
+}
+
+if {$clean} {
+  rm ./progress.dat
+}
