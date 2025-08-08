@@ -63,7 +63,7 @@ pub fn testStrcat(strcat:ustrcat_t) !bool {
   const allocator = arena.allocator();
 
   const _Test = T.Test();
-  var Test = _Test.Init("strcat");
+  var Test = _Test.Init("ustrcat");
 
   try Test.NewTest();
   const src = "Aruel";
@@ -87,7 +87,7 @@ pub fn testStrcpy(strcpy:ustrcpy_t) !bool {
   const allocator = arena.allocator();
 
   const _Test = T.Test();
-  var Test = _Test.Init("strcpy");
+  var Test = _Test.Init("ustrcpy");
 
   try Test.NewTest();
   const dst = try T.CreateStringBuffer(allocator, 64, "Chii");

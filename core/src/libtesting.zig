@@ -25,7 +25,7 @@ pub fn Test() type {
         .iteration = -1,
         .pass = true,
         .passed = 0,
-        .failed = 0		
+        .failed = 0
       };
     }
 
@@ -86,7 +86,7 @@ pub fn Test() type {
     pub fn show(self:*Self) void {
       try stdout.print("Current test: {s} on {d}\n", .{self.name, self.iteration});
     }
-	};
+  };
 }
 
 pub fn CreateStringBuffer(allocator: std.mem.Allocator, buffsize:u8, comptime str:[]const u8) ![*c]u8 {
