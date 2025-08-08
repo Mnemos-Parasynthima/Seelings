@@ -1,0 +1,69 @@
+#!/home/aruel/.local/bin/murex
+
+if {g ../clings-cr} {
+  rm ../clings-cr
+}
+
+set run = false
+set clean = false
+# set target = "-Dtarget=x86_64-native"
+set compiler = "gcc"
+set mode = "--build=debug"
+
+$PARAMS -> len -> set size
+
+if {$size > 1} {
+  $PARAMS -> [2..] -> foreach p {
+    if {$p == "run"} {
+      run = true
+    }
+
+    if {$p == "clean"} {
+      clean = true
+    }
+
+    # if {$p == "macos"} {
+    #   target = "-Dtarget=x86_64-macos"
+    #   out "Set target to x86_64-macos"
+    # }
+    # if {$p == "windows"} {
+    #   target = "-Dtarget=x86_64-windows"
+    #   out "Set target to x86_64-windows"
+    # }
+    # if {$p == "linux"} {
+    #   target = "-Dtarget=x86_64-linux-gnu"
+    #   out "Set target to x86_64-linux-gnu"
+    # }
+
+    if {$p == "release"} {
+      mode = "--build=release"
+      out "Set release mode to safe"
+    }
+
+    if {$p == "clang"} {
+      compiler = "clang"
+      out "Set compiler to clang"
+    }
+    if {$p == "gcc"} {
+      compiler = "gcc"
+      out "Set compiler to gcc"
+    }
+  }
+}
+
+out "Building..."
+shards build core --output=./bin/clings-cr
+
+!if {g ./bin/clings-cr} {
+  out "Could not build clings!"
+  exit 1 
+}
+
+out "Moving..."
+mv ./bin/clings-cr ../clings-cr
+
+
+if {$run} {
+  cd ..
+  ./clings-cr
+}

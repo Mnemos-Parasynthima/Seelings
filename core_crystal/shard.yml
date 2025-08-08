@@ -1,0 +1,11 @@
+name: core
+version: 0.1.0
+
+targets:
+  core:
+    main: src/main.cr
+
+
+crystal: '>= 1.17.0'
+
+license: MIT
